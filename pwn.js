@@ -167,9 +167,7 @@ _list = function (t) {
 
 list_ = function (l) {
    let t = NONE
-   while (l.length) {
-      t = SOME(PAIR(l.shift())(t))
-   }
+   while (l.length) t = SOME(PAIR(l.shift())(t))
    return t
 }
 
@@ -228,9 +226,7 @@ MOD = Z(z => n => m => // Z combinator
 
 num_ = function (n) {
    let x = ZERO
-   while (n --) {
-      x = SUCC(x)
-   }
+   while (n --) x = SUCC(x)
    return x
 }
 
