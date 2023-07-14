@@ -1,0 +1,58 @@
+a - f - b          f a -> b                        f a                    f a
+
+
+
+a -
+    f - c          f a b -> c                      f a b                  a f b
+b -
+
+
+
+a - f - g - b      (.) g f a -> b                  g (f a)                (f g) a  NB. hook
+
+
+
+a - f -
+        g - c      on g f a b -> c                 g (f a) (f b)          (f a) g (f b)
+b - f -
+
+
+    f -
+a <     h - b      liftA2 h f g a -> b             h (f a) (g a)          (f h g) a  NB. fork
+    g -
+
+
+
+a < f - b          join f a -> b                   f a a
+
+
+
+a -
+|   f - c          uncurry f (a,b) -> c            f a b
+b -                                                f : a -> b -> c
+
+
+a
+  > f - c          curry f a b -> c                f a b
+b                                                  f : (a,b) -> c
+
+
+    f - b
+a <     |          (&&&) f g a -> (b,c)            (,) (f a) (g a)
+    g - c
+
+
+    f - b
+a <     |          join (&&&) f a -> (b,b)         (,) (f a) (f a)
+    f - b
+
+
+a - f - c
+|       |          (***) f g (a,b) -> (c,d)        (,) (f a) (g b)
+b - g - d          bimap f g (a,b) -> (c,d)
+
+
+a - f - c
+|       |          join bimap f (a,b) -> (c,d)     (,) (f a) (f b)
+b - f - d
+
