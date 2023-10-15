@@ -34,7 +34,7 @@ COMPOSE = f => g => x => f(g(x))
 TRUE = a => b => a
 FALS = a => b => b
 // TRUE = CONST
-// FALS = TRUE(ID)
+// FALS = CONST(ID)
 
 
 NOT = p => a => b => p(b)(a)
