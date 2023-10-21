@@ -303,7 +303,7 @@ let list = PAIR(num_(9))(SOME(PAIR(num_(8))(SOME(PAIR(num_(7))(NONE))))) // non 
 
 juzt.test('LIST', JSON.stringify(_list(list_([9,8,7]))) === JSON.stringify([9,8,7]))
 juzt.test('LIST', JSON.stringify(_list(MAP(_num)(SOME(list)))) === JSON.stringify([9,8,7]))
-juzt.test('LIST', JSON.stringify(_list(SOME(list)).map(x => _num(x))) === JSON.stringify([9,8,7]))
+juzt.test('LIST', JSON.stringify(_list(SOME(list)).map(_num)) === JSON.stringify([9,8,7]))
 
 juzt.test('HEAD', _num(HEAD(list)) === 9)
 juzt.test('TAIL', _num(HEAD(FROMSOME(TAIL(list)))) === 8)
