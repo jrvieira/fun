@@ -46,8 +46,11 @@ XOR = p => q => a => b => p(q(b)(a))(q(a)(b))
 OR = p => q => p(p)(q)
 AND = p => q => p(q)(p)
 NOR = p => q => NOT(OR(p)(q))
+// NOR = COMPOSE(NOT)(OR)
 NAND = p => q => NOT(AND(p)(q))
+// NAND = COMPOSE(NOT)(AND)
 BEQ = p => q => NOT(XOR(p)(q))
+// BEQ = COMPOSE(NOT)(XOR)
 // XNOR
 
 _bool = p => p(true)(false)
