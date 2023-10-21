@@ -66,6 +66,10 @@ SND = t => t(a => b => b)
 
 _pair = t => ({ fst: FST(t), snd: SND(t) })
 
+pair_ = function (p) {
+   return PAIR(p.fst)(p.snd)
+}
+
 /* option */
 
 NONE = n => s => n
