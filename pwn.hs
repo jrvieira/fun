@@ -41,28 +41,16 @@ not p a b = p b a
 
 xor p q a b = p (q b a) (q a b)
 
---ERR or p q = p p q
-
+and p q = p q fals
 --ERR and p q = p q p
 
--- this required some type-checker gymnastics:
+or p q = p true q
+--ERR or p q = p p q
 
-{- \#haskell on IRC
-newtype OR a b = F_or  { f_or :: OR a b -> a -> b }
-
-or :: OR a b -> a -> b
-or p q = f_or  p p q
-
-newtype AND a b = F_and { f_and :: a -> AND a b -> b }
-
-and :: AND a b -> a -> b
-and p q = f_and p q p
--}
-
---ERR nor p q = not (or p q)
+nor p q = not (or p q)
 -- nor = compose not or
 
---ERR nand p q = not (and p q)
+nand p q = not (and p q)
 -- nand = compose not and
 
 beq p q = not (xor p q)
@@ -135,7 +123,7 @@ zero f x = x
 
 succ n f x = f (n f x)
 
-pred n f x = n (\g h -> (h (g f))) (\y -> x) (\y -> y)  -- wtf
+pred n f x = n (\g h -> h (g f)) (\y -> x) (\y -> y)  -- wtf
 
 _num n = n (1 +) 0
 
@@ -181,20 +169,20 @@ main = print r
       , True  <- _bool (xor fals true)
       , False <- _bool (xor true true)
 
---ERR , False <- _bool (and fals fals)
---ERR , False <- _bool (and true fals)
---ERR , False <- _bool (and fals true)
---ERR , True  <- _bool (and true true)
+      , False <- _bool (and fals fals)
+      , False <- _bool (and true fals)
+      , False <- _bool (and fals true)
+      , True  <- _bool (and true true)
 
---ERR , True  <- _bool (nor fals fals)
---ERR , False <- _bool (nor true fals)
---ERR , False <- _bool (nor fals true)
---ERR , False <- _bool (nor true true)
+      , True  <- _bool (nor fals fals)
+      , False <- _bool (nor true fals)
+      , False <- _bool (nor fals true)
+      , False <- _bool (nor true true)
 
---ERR , True  <- _bool (nand fals fals)
---ERR , True  <- _bool (nand true fals)
---ERR , True  <- _bool (nand fals true)
---ERR , False <- _bool (nand true true)
+      , True  <- _bool (nand fals fals)
+      , True  <- _bool (nand true fals)
+      , True  <- _bool (nand fals true)
+      , False <- _bool (nand true true)
 
       , True  <- _bool (beq fals fals)
       , False <- _bool (beq true fals)
@@ -208,6 +196,7 @@ main = print r
       , 16 <- _num (sum (num_ 9) (num_ 7))
       , 63 <- _num (mul (num_ 9) (num_ 7))
       , 6 <- _num (pred (num_ 7))
+      , 2 <- _num (sub (succ zero) (num_ 0))
 --ERR , 2 <- _num (sub (num_ 9) (num_ 7))
 --ERR , 0 <- _num (sub (num_ 7) (num_ 9))
       , 27 <- _num (pow (num_ 3) (num_ 3))
@@ -224,9 +213,9 @@ main = print r
 --ERR , False <- _bool (eq  (num_ 7) (num_ 9))
 --ERR , True  <- _bool (eq  (num_ 9) (num_ 9))
 --ERR , False <- _bool (eq  (num_ 9) (num_ 7))
---ERR , 2 <- _num (MOD (num_ 9) (num_ 7))
---ERR , 0 <- _num (MOD (num_ 7) (num_ 7))
---ERR , 7 <- _num (MOD (num_ 7) (num_ 9))
+--ERR , 2 <- _num (mod (num_ 9) (num_ 7))
+--ERR , 0 <- _num (mod (num_ 7) (num_ 7))
+--ERR , 7 <- _num (mod (num_ 7) (num_ 9))
 
 --ERR , [9,8,7] <- _list (list_ [9,8,7])
 --ERR , [9,8,7] <- _list (map _num (some list))
@@ -249,3 +238,35 @@ main = print r
       | True = False
 
 
+
+-- ------------------------------------------------------------------
+-- import Prelude ( (+) , (-) , Num , Eq, print )
+--
+-- -- church numeral zero
+-- zero :: a -> b -> b
+-- zero f x = x
+--
+-- -- successor function
+-- succ :: ((a -> b) -> (c -> a)) -> (a -> b) -> c -> b
+-- succ n f x = f (n f x)
+--
+-- -- predecessor function (subtraction)
+-- pred :: (((f -> a) -> (a -> b) -> b) -> (y -> x) -> (z -> z) -> c) -> f -> x -> c
+-- pred n f x = n (\g h -> h (g f)) (\y -> x) (\y -> y)
+--
+-- -- subtract n from m
+-- sub :: t1 -> (((((f -> a) -> (a -> b) -> b) -> (y -> x) -> (u -> u) -> c) -> f -> x -> c) -> t1 -> t2) -> t2
+-- sub m n = n pred m
+--
+-- -- convert from church
+-- _num :: b -> c
+-- _num n = n (1 +) 0
+--
+-- -- convert to church
+-- num_ :: (Num a, Eq a) => a -> (b -> b) -> b -> b
+-- num_ 0 = zero
+-- num_ n = succ (num_ (n - 1))
+--
+-- main = do
+--     print (_num (sub (num_ 3) (succ zero)))  -- 2
+-- --  print (_num (sub (num_ 3) (num_ 0)))     -- ERRORS
